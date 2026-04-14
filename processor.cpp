@@ -69,3 +69,16 @@ namespace processor {
     };
 
 }
+
+
+/*test instruction set
+"ADD R1, R2, R3",
+"SUB R4, R5, R6",
+"AND R7, R8, R9",
+"OR R10, R11, R12",
+"XOR R13, R14, R15",
+"NOT R16, R17",
+"SHL R18, R19, 2",
+"SHR R20, R21, 2",
+"JMP 100",
+"BEQ R22, R23, 50"*/

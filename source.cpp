@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "utils.h"
+#include "processor.cpp"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    printStatement();
+    //printStatement();
     return 0;
 }
