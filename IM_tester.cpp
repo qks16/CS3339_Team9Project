@@ -8,9 +8,11 @@ using namespace processor;
 int main(int argc, char* argv[]) {
     //printStatement();
 
-    Instruction_Memory im(256); // create an instruction memory with default size 256
-        im.setInstruction(0, "ADD R1, R2, R3");
-        im.setInstruction(1, "SUB R4, R5, R6");
+    int instruction_memory_size = 2; // default size for instruction memory
+
+    Instruction_Memory im(instruction_memory_size); // create an instruction memory with default size 2
+        im.setInstruction(0, "ADD, R1, R2, R3");
+        im.setInstruction(1, "SUB, R4, R5, R6");
     
         
         cout << "PC: " << im.getPC() << endl; // should print 0
@@ -23,6 +25,22 @@ int main(int argc, char* argv[]) {
 
         while (im.getPC() < 2) {
             cout << "Executing instruction at PC: " << im.getPC() << " - " << im.getInstruction() << endl;
+
+            //find operand, source1, source2, and destination registers by parsing the instruction string
+
+            string operand = im.getInstruction().substr(0, im.getInstruction().find(",")); // get the operand (e.g. "ADD")
+            string rest = im.getInstruction().substr(im.getInstruction().find(",") + 1); // get the rest of the instruction (e.g. " R1, R2, R3")
+            string source1 = rest.substr(0, rest.find(",")); // get the first source register (e.g. " R1")
+            rest = rest.substr(rest.find(",") + 1); // get the rest of the instruction (e.g. " R2, R3")
+            string source2 = rest.substr(0, rest.find(",")); // get the second source register (e.g. " R2")
+            string destination = rest.substr(rest.find(",") + 1); // get the destination register (e.g. " R3")
+
+            //display the parsed instruction components
+            cout << "Operand: " << operand << endl;
+            cout << "Source 1: " << source1 << endl;
+            cout << "Source 2: " << source2 << endl;
+            cout << "Destination: " << destination << endl;
+
             im.setPC(im.getPC() + 1); // move to next instruction
         }
 
