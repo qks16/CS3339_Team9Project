@@ -43,6 +43,11 @@ int main(int argc, char* argv[]) {
             cout << "Source 2: " << source2 << endl;
             cout << "Destination: " << destination << endl;
 
+            if(im.getPC() == instruction_memory_size - 1) {
+                cout << "end of program." << endl;
+                break;
+            }
+
             im.setPC(im.getPC() + 1); // move to next instruction
         }
 
