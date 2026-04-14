@@ -23,6 +23,8 @@ int main(int argc, char* argv[]) {
         cout << "PC: " << im.getPC() << endl; // should print 1
         cout << "Instruction at PC: " << im.getInstruction() << endl; // should print "SUB R4, R5, R6"
 
+        im.setPC(0); // reset PC to 0
+
         while (im.getPC() < 2) {
             cout << "Executing instruction at PC: " << im.getPC() << " - " << im.getInstruction() << endl;
 
