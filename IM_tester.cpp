@@ -12,34 +12,13 @@ using namespace processor;
 // "SUB, R4, R5, R6"
 
 int main(int argc, char* argv[]) {
-    //printStatement();
 
     int instruction_memory_size = atoi(argv[1]);
     Instruction_Memory im(instruction_memory_size); // create an instruction memory with default size 2
     
     ifstream infile(argv[2]);
-
-    //simple loader for instructions from a file, each line in the file is an instruction
-    for(int address = 0; !infile.eof(); address++) {
-        //check if we have reached the end of the instruction memory
-        if(address == instruction_memory_size - 1) {
-                break;
-            }
-        string instruction;
-        getline(infile, instruction); // read instruction from file
-        
-        im.setInstruction(address, instruction); // set instruction at current address
-    }
-        
-        cout << "PC: " << im.getPC() << endl; // should print 0
-        cout << "Instruction at PC: " << im.getInstruction() << endl; // should print "ADD R1, R2, R3"
     
-        im.setPC(1); // set PC to 1
-
-        cout << "PC: " << im.getPC() << endl; // should print 1
-        cout << "Instruction at PC: " << im.getInstruction() << endl; // should print "SUB R4, R5, R6"
-
-        im.setPC(0); // reset PC to 0
+    im.loadInstructions(infile);
 
         while (im.getPC() < instruction_memory_size) {
             cout << "Executing instruction at PC: " << im.getPC() << " - " << im.getInstruction() << endl;

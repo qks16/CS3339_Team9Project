@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 
 using namespace std;
@@ -42,11 +43,18 @@ namespace processor {
                 return instruction_set[pc];
             }
 
-            void setInstruction(int address, string instruction) {
-                if (address < 0 || address >= SIZE) {
+            //simple loader for instructions from a file, each line in the file is an instruction
+            void loadInstructions(ifstream& infile) {
+                for(int address = 0; !infile.eof(); address++) {
+                    string instruction;
+                    getline(infile, instruction); // read instruction from file
+
+                    if (address < 0 || address >= SIZE) {
                     throw out_of_range("Address out of range");
+                    }
+        
+                    instruction_set[address] = instruction; // set instruction at current address
                 }
-                instruction_set[address] = instruction;
             }
 
     };
