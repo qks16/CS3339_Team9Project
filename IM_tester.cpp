@@ -21,6 +21,10 @@ int main(int argc, char* argv[]) {
 
     //simple loader for instructions from a file, each line in the file is an instruction
     for(int address = 0; !infile.eof(); address++) {
+        //check if we have reached the end of the instruction memory
+        if(address == instruction_memory_size - 1) {
+                break;
+            }
         string instruction;
         getline(infile, instruction); // read instruction from file
         
