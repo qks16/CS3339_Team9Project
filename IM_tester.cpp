@@ -7,6 +7,10 @@
 using namespace std;
 using namespace processor;
 
+// simple test case
+// "ADD, R1, R2, R3"
+// "SUB, R4, R5, R6"
+
 int main(int argc, char* argv[]) {
     //printStatement();
 
