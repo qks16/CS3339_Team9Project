@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <fstream>
 
 #include "processor.cpp"
 
@@ -8,12 +10,18 @@ using namespace processor;
 int main(int argc, char* argv[]) {
     //printStatement();
 
-    int instruction_memory_size = 2; // default size for instruction memory
-
+    int instruction_memory_size = atoi(argv[1]);
     Instruction_Memory im(instruction_memory_size); // create an instruction memory with default size 2
-        im.setInstruction(0, "ADD, R1, R2, R3");
-        im.setInstruction(1, "SUB, R4, R5, R6");
     
+    ifstream infile(argv[2]);
+
+    //simple loader for instructions from a file, each line in the file is an instruction
+    for(int address = 0; !infile.eof(); address++) {
+        string instruction;
+        getline(infile, instruction); // read instruction from file
+        
+        im.setInstruction(address, instruction); // set instruction at current address
+    }
         
         cout << "PC: " << im.getPC() << endl; // should print 0
         cout << "Instruction at PC: " << im.getInstruction() << endl; // should print "ADD R1, R2, R3"
@@ -25,7 +33,7 @@ int main(int argc, char* argv[]) {
 
         im.setPC(0); // reset PC to 0
 
-        while (im.getPC() < 2) {
+        while (im.getPC() < instruction_memory_size) {
             cout << "Executing instruction at PC: " << im.getPC() << " - " << im.getInstruction() << endl;
 
             //find operand, source1, source2, and destination registers by parsing the instruction string

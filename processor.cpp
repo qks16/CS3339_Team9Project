@@ -17,7 +17,7 @@ namespace processor {
 
             //instruction memory constructor, used to initialize the instruction memory with a given size
             //if size is not provided, default to 256
-            Instruction_Memory(int size = 256) :  pc(0), SIZE(size) {
+            Instruction_Memory(int size) :  pc(0), SIZE(size) {
                 instruction_set = new string[size];
             }
 
