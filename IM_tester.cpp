@@ -48,13 +48,22 @@ int main(int argc, char* argv[]) {
 
     return 0;
 
-    /*test instruction set
-    "ADD, R1, R2, R3",+
-    "SUB, R4, R5, R6",+
-    "AND, R7, R8, R9",+
-    "OR, R10, R11, R12",+
-    "SLL, R18, R19, 2",+
-    "SRR, R20, R21, 2",+
-    "JMP, 100",
-    "BEQ, R22, R23, 50"*/
+    /*MIPS simulation instruction set
+    R-type instructions:
+    "ADD, R1, R2, R3",
+    "SUB, R4, R5, R6",
+    "MUL, R1, R2, R3",
+    "AND, R7, R8, R9",
+    "OR, R10, R11, R12",
+    "SLL, R18, R19, 2",
+    "SRL, R20, R21, 2",
+    I-type instructions:
+    "ADDI, R1, R2, 10",
+    "LW, R1, 100(R2)",
+    "SW, R1, 100(R2)",
+    "BEQ, R1, R2, 50",
+    J-type instructions:
+    "J, 100",
+    misc instructions:
+    "NOP",*/
 }
