@@ -85,7 +85,7 @@ namespace processor {
             bool ALUOp1; // ALU operation 1
             bool ALUOp0; // ALU operation 0
 
-            string mathOpr[5] = {"ADD", "SUB", "MUL", "AND", "OR"};
+            //string mathOpr[5] = {"ADD", "SUB", "MUL", "AND", "OR"};
 
         public:
             // control unit constructor, used to initialize the control signals based on the instruction type

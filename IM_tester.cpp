@@ -16,6 +16,10 @@ int main(int argc, char* argv[]) {
     int instruction_memory_size = atoi(argv[1]);
     Instruction_Memory im(instruction_memory_size); // create an instruction memory with default size 2
     
+    string R_TypeOperand[7] = {"ADD", "SUB", "MUL", "AND", "OR", "SLL", "SRL"};
+    string I_TypeOperand[5] = {"ADDI", "LW", "SW", "BEQ"};
+    string J_TypeOperand[1] = {"J"};
+
     ifstream infile(argv[2]);
     
     im.loadInstructions(infile);
@@ -45,6 +49,7 @@ int main(int argc, char* argv[]) {
 
             im.setPC(im.getPC() + 1); // move to next instruction
         }
+
 
     return 0;
 
