@@ -60,20 +60,89 @@ namespace processor {
     };
 
     class Register_File {
-    
+    private:
+        array<int,32> regs{};
+    public:
+        Register_File() { regs.fill(0); }
 
+        int read(int r) const {
+            if (r < 0 || r > 31) throw out_of_range("Register read OOB");
+            return regs[r];
+        }
+
+        void write(int r, int v) {
+            if (r < 0 || r > 31) throw out_of_range("Register write OOB");
+            if (r != 0) regs[r] = v;
+        }
+
+        void print() const {
+            cout << "┌─────────────────── Register File ───────────────────┐\n";
+            for (int i = 0; i < 32; ++i) {
+                cout << "│ R" << setw(2) << setfill('0') << i << setfill(' ')
+                     << " = " << setw(10) << regs[i] << "  ";
+                if (i % 4 == 3) cout << "│\n";
+            }
+            cout << "└──────────────────────────────────────────────────────┘\n";
+        }
     };
 
     class ALU {
-
+    public:
+        int execute(const string& op, int a, int b, int shamt = 0) const {
+            if (op=="ADD")  return a + b;
+            if (op=="SUB")  return a - b;
+            if (op=="MUL")  return a * b;
+            if (op=="AND")  return a & b;
+            if (op=="OR")   return a | b;
+            if (op=="SLL")  return b << shamt;
+            if (op=="SRL")  return (int)((unsigned int)b >> shamt);
+            throw runtime_error("Unknown ALU op: " + op);
+        }
     };
 
     class Data_Memory {
+    private:
+        unordered_map<int,int> mem;
+    public:
+        int  loadWord(int addr)           const { auto it=mem.find(addr); return it==mem.end()?0:it->second; }
+        void storeWord(int addr, int val)       { mem[addr]=val; }
 
+        void print() const {
+            cout << "┌──────────────────── Data Memory ────────────────────┐\n";
+            if (mem.empty()) {
+                cout << "│  (no data written)                                  │\n";
+            } else {
+                for (const auto& [a,v] : mem)
+                    cout << "│  Mem[" << setw(5) << a << "] = " << setw(10) << v << "                            │\n";
+            }
+            cout << "└──────────────────────────────────────────────────────┘\n";
+        }
     };
 
     class Control_Unit {
-    
+    public:
+        ControlSignals decode(Opcode op) const {
+            ControlSignals c;
+            switch (op) {
+                case Opcode::ADD: case Opcode::SUB: case Opcode::AND:
+                case Opcode::OR:  case Opcode::MUL:
+                    c.RegDst=1; c.RegWrite=1; c.ALUOp=opcodeToString(op); break;
+                case Opcode::SLL: case Opcode::SRL:
+                    c.RegDst=1; c.RegWrite=1; c.ALUOp=opcodeToString(op); break;
+                case Opcode::ADDI:
+                    c.ALUSrc=1; c.RegWrite=1; c.ALUOp="ADD"; break;
+                case Opcode::LW:
+                    c.ALUSrc=1; c.MemtoReg=1; c.RegWrite=1; c.MemRead=1; c.ALUOp="ADD"; break;
+                case Opcode::SW:
+                    c.ALUSrc=1; c.MemWrite=1; c.ALUOp="ADD"; break;
+                case Opcode::BEQ:
+                    c.Branch=1; c.ALUOp="SUB"; break;
+                case Opcode::J:
+                    c.Jump=1; break;
+                default: break;
+            }
+            return c;
+        }
     };
 
 }
