@@ -11,4 +11,4 @@ processor.o: processor.cpp
 	g++ -Wall -c processor.cpp
 
 clean:
-	rm -f im_test processor.o MIPSSimulator
+	rm -f im_test processor.o  newprocessor.o MIPSSimulator
