@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "processor.cpp"
+#include "newprocessor.cpp"
 
 using namespace std;
 using namespace processor;
