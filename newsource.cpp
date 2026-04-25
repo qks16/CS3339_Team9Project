@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "newprocessor.cpp" //changed to link different file MIGHT BE WRONG
+#include "JMprocessor.cpp" //changed to link different file MIGHT BE WRONG
 
 using namespace std;
 using namespace processor;
