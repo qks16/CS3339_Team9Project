@@ -123,6 +123,96 @@ namespace processor {
     };
 
     class Control_Unit {
+<<<<<<< HEAD
+        private:
+            // control signals
+            bool RegDst; // register destination
+            bool ALUSrc; // ALU source
+            bool MemtoReg; // memory to register
+            bool RegWrite; // register write
+            bool MemRead; // memory read
+            bool MemWrite; // memory write
+            bool Branch; // branch
+            bool ALUOp1; // ALU operation 1
+            bool ALUOp0; // ALU operation 0
+
+            //string mathOpr[5] = {"ADD", "SUB", "MUL", "AND", "OR"};
+
+        public:
+            // control unit constructor, used to initialize the control signals based on the instruction type
+            Control_Unit(string operand) {
+
+                if (operand == "ADD" || operand == "SUB" || operand == "MUL" || operand == "AND" || operand == "OR") {
+                    RegDst = true;
+                    ALUSrc = false;
+                    MemtoReg = false;
+                    RegWrite = true;
+                    MemRead = false;
+                    MemWrite = false;
+                    Branch = false;
+                    ALUOp1 = true;
+                    ALUOp0 = false;
+                } else if (operand == "SLL" || operand == "SRL") {
+                    RegDst = true;
+                    ALUSrc = true;
+                    MemtoReg = false;
+                    RegWrite = true;
+                    MemRead = false;
+                    MemWrite = false;
+                    Branch = false;
+                    ALUOp1 = true;
+                    ALUOp0 = true;
+                } else {
+                    // default control signals for unsupported instructions
+                    RegDst = false;
+                    ALUSrc = false;
+                    MemtoReg = false;
+                    RegWrite = false;
+                    MemRead = false;
+                    MemWrite = false;
+                    Branch = false;
+                    ALUOp1 = false;
+                    ALUOp0 = false;
+                }
+            }
+
+            bool isRegDst() {
+                return RegDst;
+            }
+
+            bool isALUSrc() {
+                return ALUSrc;
+            }
+
+            bool isMemtoReg() {
+                return MemtoReg;
+            }
+
+            bool isRegWrite() {
+                return RegWrite;
+            }
+
+            bool isMemRead() {
+                return MemRead;
+            }
+
+            bool isMemWrite() {
+                return MemWrite;
+            }
+
+            bool isBranch() {
+                return Branch;
+            }
+
+            bool isALUOp1() {
+                return ALUOp1;
+            }
+
+            bool isALUOp0() {
+                return ALUOp0;
+            }
+    
+=======
     public:
         ControlSignals decode(Opcode op) const {
             ControlSignals c;
@@ -146,6 +236,7 @@ namespace processor {
             }
             return c;
         }
+>>>>>>> main
     };
 
 }
