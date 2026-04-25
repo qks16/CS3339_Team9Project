@@ -1,2 +1,6 @@
 # CS3339_Team9Project
 an instruction-by-instruction simulator for a pipelined MIPS processor. The simulator will execute instructions from the input assembly file one-by-one and display the contents of the register file and memory after the program has finished execution.
+
+notes:
+for sake of time, with LW and SW offset is specified as its own section (i.e , ... ,) instead of
+typical relative addressing i.e. 15(R2).

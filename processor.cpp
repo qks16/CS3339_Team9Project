@@ -123,7 +123,6 @@ namespace processor {
     };
 
     class Control_Unit {
-<<<<<<< HEAD
         private:
             // control signals
             bool RegDst; // register destination
@@ -212,31 +211,6 @@ namespace processor {
                 return ALUOp0;
             }
     
-=======
-    public:
-        ControlSignals decode(Opcode op) const {
-            ControlSignals c;
-            switch (op) {
-                case Opcode::ADD: case Opcode::SUB: case Opcode::AND:
-                case Opcode::OR:  case Opcode::MUL:
-                    c.RegDst=1; c.RegWrite=1; c.ALUOp=opcodeToString(op); break;
-                case Opcode::SLL: case Opcode::SRL:
-                    c.RegDst=1; c.RegWrite=1; c.ALUOp=opcodeToString(op); break;
-                case Opcode::ADDI:
-                    c.ALUSrc=1; c.RegWrite=1; c.ALUOp="ADD"; break;
-                case Opcode::LW:
-                    c.ALUSrc=1; c.MemtoReg=1; c.RegWrite=1; c.MemRead=1; c.ALUOp="ADD"; break;
-                case Opcode::SW:
-                    c.ALUSrc=1; c.MemWrite=1; c.ALUOp="ADD"; break;
-                case Opcode::BEQ:
-                    c.Branch=1; c.ALUOp="SUB"; break;
-                case Opcode::J:
-                    c.Jump=1; break;
-                default: break;
-            }
-            return c;
-        }
->>>>>>> main
     };
 
 }

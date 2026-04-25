@@ -100,9 +100,9 @@ namespace processor {
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
     static string trim(const string& s) {
-        size_t a = s.find_first_not_of(" \t\r\n");
-        if (a == string::npos) return "";
-        return s.substr(a, s.find_last_not_of(" \t\r\n") - a + 1);
+        size_t a = s.find_first_not_of(" \t\r\n"); //length of whitespace at start of string
+        if (a == string::npos) return ""; //change s to be substring starting at first non-whitespace character
+        return s.substr(a, s.find_last_not_of(" \t\r\n") - a + 1); //change s to be substring starting at first non-whitespace character and ending at last non-whitespace character
     }
 
     static string toUpper(string s) {
@@ -114,7 +114,7 @@ namespace processor {
         vector<string> parts;
         string token;
         istringstream ss(line);
-        while (getline(ss, token, ',')) parts.push_back(trim(token));
+        while (getline(ss, token, ',')) if(token == ";") break; parts.push_back(trim(token)); /* stop parsing at comment character */
         return parts;
     }
 
@@ -247,25 +247,26 @@ namespace processor {
             Instruction inst;
             inst.raw = line;
             auto parts = splitCSV(line);
+            
             if (parts.empty()) return inst;
             inst.opcode = parseOpcode(parts[0]);
             if (inst.opcode == Opcode::INVALID)
                 throw runtime_error("Unknown opcode: " + parts[0]);
 
-            switch (inst.opcode) {
+            switch (inst.opcode) { // for stoi calls, removed trim since splitCSV already trims the parts
                 case Opcode::ADD: case Opcode::SUB: case Opcode::MUL:
                 case Opcode::AND: case Opcode::OR:
                     if (parts.size()!=4) throw runtime_error("Bad format: " + line);
                     inst.rd=parseReg(parts[1]); inst.rs=parseReg(parts[2]); inst.rt=parseReg(parts[3]); break;
                 case Opcode::ADDI:
                     if (parts.size()!=4) throw runtime_error("Bad format: " + line);
-                    inst.rt=parseReg(parts[1]); inst.rs=parseReg(parts[2]); inst.imm=stoi(trim(parts[3])); break;
+                    inst.rt=parseReg(parts[1]); inst.rs=parseReg(parts[2]); inst.imm=stoi(parts[3]); break;
                 case Opcode::SLL: case Opcode::SRL:
                     if (parts.size()!=4) throw runtime_error("Bad format: " + line);
-                    inst.rd=parseReg(parts[1]); inst.rt=parseReg(parts[2]); inst.shamt=stoi(trim(parts[3])); break;
+                    inst.rd=parseReg(parts[1]); inst.rt=parseReg(parts[2]); inst.shamt=stoi(parts[3]); break;
                 case Opcode::LW: case Opcode::SW:
                     if (parts.size()!=4) throw runtime_error("Bad format: " + line);
-                    inst.rt=parseReg(parts[1]); inst.imm=stoi(trim(parts[2])); inst.rs=parseReg(parts[3]); break;
+                    inst.rt=parseReg(parts[1]); inst.imm=stoi(parts[2]); inst.rs=parseReg(parts[3]); break; 
                 case Opcode::BEQ:
                     if (parts.size()!=4) throw runtime_error("Bad format: " + line);
                     inst.rs=parseReg(parts[1]); inst.rt=parseReg(parts[2]); inst.label=trim(parts[3]); break;
@@ -368,6 +369,7 @@ namespace processor {
             return !if_id.valid && !id_ex.valid && !ex_mem.valid && !mem_wb.valid;
         }
 
+        // Helper to format control signals for debug printing
         static string ctrlStr(const ControlSignals& c) {
             ostringstream os;
             os << "RegDst="   << c.RegDst
@@ -382,6 +384,7 @@ namespace processor {
             return os.str();
         }
 
+        // Helper to format instruction for debug printing
         static string instrStr(const Instruction& inst, bool v) {
             if (!v) return "[ empty ]";
             return inst.raw;
@@ -389,7 +392,8 @@ namespace processor {
 
         // ── WB Stage ──────────────────────────────────────────────────────────
         void stageWB() {
-            if (!mem_wb.valid) return;
+            if (!mem_wb.valid) return; //make sure that state register has had a chance to update with correct data before we read it
+            //check mem_wb control signals to determine if we need to write back to register file and if what we write back is coming from memory or ALU result
             if (mem_wb.control.RegWrite) {
                 int val = mem_wb.control.MemtoReg ? mem_wb.readData : mem_wb.aluResult;
                 rf.write(mem_wb.writeReg, val);
@@ -399,17 +403,20 @@ namespace processor {
         // ── MEM Stage ─────────────────────────────────────────────────────────
         void stageMEM() {
             mem_wb_next = {};
-            if (!ex_mem.valid) return;
+            if (!ex_mem.valid) return; //make sure that state register has had a chance to update with correct data before we read it
             mem_wb_next.valid     = true;
+            //propagate state register data to next stage
             mem_wb_next.pc        = ex_mem.pc;
             mem_wb_next.instr     = ex_mem.instr;
             mem_wb_next.control   = ex_mem.control;
             mem_wb_next.aluResult = ex_mem.aluResult;
             mem_wb_next.writeReg  = ex_mem.writeReg;
 
+            //perform memory operations if called for by control signals
             if (ex_mem.control.MemRead)  mem_wb_next.readData = dm.loadWord(ex_mem.aluResult);
             if (ex_mem.control.MemWrite) dm.storeWord(ex_mem.aluResult, ex_mem.writeData);
 
+            //handle branch/jump redirection - if branch is taken or jump is taken, we need to redirect the PC and flush the instructions in IF and ID stages
             if (ex_mem.branchTaken) { redirectPC=true; redirectedPC=ex_mem.branchTarget; if_id_next={}; id_ex_next={}; ex_mem_next={}; }
             if (ex_mem.jumpTaken)   { redirectPC=true; redirectedPC=ex_mem.jumpTarget;   if_id_next={}; id_ex_next={}; ex_mem_next={}; }
         }
@@ -417,14 +424,16 @@ namespace processor {
         // ── EX Stage ──────────────────────────────────────────────────────────
         void stageEX() {
             ex_mem_next = {};
-            if (!id_ex.valid) return;
+            if (!id_ex.valid) return; //make sure that state register has had a chance to update with correct data before we read it
             ex_mem_next.valid     = true;
+            //propagate state register data to next stage
             ex_mem_next.pc        = id_ex.pc;
             ex_mem_next.instr     = id_ex.instr;
             ex_mem_next.control   = id_ex.control;
             ex_mem_next.writeData = id_ex.readData2;
             ex_mem_next.writeReg  = id_ex.control.RegDst ? id_ex.rd : id_ex.rt;
 
+            // perform ALU operation using control signals to determine ALU inputs
             int opB = id_ex.control.ALUSrc ? id_ex.signExtImm : id_ex.readData2;
             ex_mem_next.aluResult   = alu.execute(id_ex.control.ALUOp, id_ex.readData1, opB, id_ex.shamt);
             ex_mem_next.zero        = (ex_mem_next.aluResult == 0);
@@ -437,8 +446,9 @@ namespace processor {
         // ── ID Stage ──────────────────────────────────────────────────────────
         void stageID() {
             id_ex_next = {};
-            if (!if_id.valid) return;
+            if (!if_id.valid) return; //make sure that state register has had a chance to update with correct data before we read it
             id_ex_next.valid       = true;
+            //propagate state register data to next stage
             id_ex_next.pc          = if_id.pc;
             id_ex_next.instr       = if_id.instr;
             id_ex_next.rs          = if_id.instr.rs;
@@ -446,6 +456,7 @@ namespace processor {
             id_ex_next.rd          = if_id.instr.rd;
             id_ex_next.shamt       = if_id.instr.shamt;
             id_ex_next.signExtImm  = if_id.instr.imm;
+            //read registers and generate control signals
             id_ex_next.readData1   = rf.read(if_id.instr.rs);
             id_ex_next.readData2   = rf.read(if_id.instr.rt);
             id_ex_next.control     = cu.decode(if_id.instr.opcode);
@@ -454,7 +465,8 @@ namespace processor {
         // ── IF Stage ──────────────────────────────────────────────────────────
         void stageIF() {
             if_id_next = {};
-            if (redirectPC) { im.setPC(redirectedPC); redirectPC=false; }
+            if (redirectPC) { im.setPC(redirectedPC); redirectPC=false; } //take branch/jump if called for by MEM stage
+            //fetch next instruction if PC is valid and increment PC for next cycle.
             if (im.getPC() < im.size()) {
                 if_id_next.valid = true;
                 if_id_next.pc   = im.getPC();
@@ -531,6 +543,7 @@ namespace processor {
         void run() {
             int cycle = 1;
             while (im.getPC() < im.size() || !pipelineEmpty()) {
+                //backward order to avoid overwriting state before it's used in the same cycle
                 stageWB();
                 stageMEM();
                 stageEX();
