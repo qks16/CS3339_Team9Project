@@ -1,0 +1,13 @@
+LW, R1, 0, R0
+ADDI, R2, R0, 0
+ADDI, R3, R0, 5
+ADDI, R4, R0, 0
+SLL, R5, R2, 2
+ADD, R6, R1, R
+LW, R7, 0, R6
+ADD, R4, R4, R
+ADDI, R2, R2, 1
+BEQ, R2, R3, 1
+J, 4
+SW, R4, 20, R0
+NOP
