@@ -114,7 +114,19 @@ namespace processor {
         vector<string> parts;
         string token;
         istringstream ss(line);
-        while (getline(ss, token, ',')) if(token == ";") break; parts.push_back(trim(token)); /* stop parsing at comment character */
+
+        while (getline(ss, token, ',')) {
+        size_t pos = token.find(';');
+
+        if (pos != string::npos) {
+            token = token.substr(0, pos);
+            parts.push_back(trim(token));
+            break; // stop parsing after comment marker
+        }
+
+        parts.push_back(trim(token));
+    }
+
         return parts;
     }
 
