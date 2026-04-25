@@ -11,5 +11,5 @@ ADD, R4, R4, R7
 ADDI, R2, R2, 1
 J, LOOP
 END:
-SW, R4, 20(R0)
+SW, R4, 20, R0
 NOP
