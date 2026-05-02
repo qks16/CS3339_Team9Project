@@ -8,7 +8,8 @@ A 5-stage pipelined MIPS processor simulator built in C++. Simulates the IF → 
 ## Build
 
 ```bash
-g++ -std=c++17 -Wall newsource.cpp -o mips_sim.exe
+g++ -std=c++17 -c newprocessor.cpp
+g++ -std=c++17 -Wall newsource.cpp newprocessor.o -o mips_sim.exe
 ```
 
 ---
