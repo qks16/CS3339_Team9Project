@@ -41,3 +41,14 @@ g++ -std=c++17 -Wall newsource.cpp newprocessor.o -o mips_sim.exe
 ---
 
 ## Project Structure
+
+```text
+CS3339_Team9Project/
+├── newsource.cpp       — main entry point, parses args and runs simulator
+├── newprocessor.cpp    — PipelineSimulator, ALU, Register_File,
+│                          Instruction_Memory, Data_Memory, Control_Unit
+├── newIM_tester.cpp    — standalone instruction memory tester
+├── Makefile            — build rules for mips_sim.exe and tester
+├── README.md           — project overview and usage
+└── assemblydemo2       — demo program using all 13 instructions
+
