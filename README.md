@@ -49,6 +49,4 @@ CS3339_Team9Project/
 │                          Instruction_Memory, Data_Memory, Control_Unit
 ├── newIM_tester.cpp    — standalone instruction memory tester
 ├── Makefile            — build rules for mips_sim.exe and tester
-├── README.md           — project overview and usage
 └── assemblydemo2       — demo program using all 13 instructions
-
